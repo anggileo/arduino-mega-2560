@@ -1,4 +1,4 @@
-                                                                                                             #include <EEPROM.h>
+#include <EEPROM.h>
 #include <Wire.h>
 #include <DHT.h>
 #include <LiquidCrystal.h>
@@ -24,7 +24,7 @@ LiquidCrystal lcd(RS,E,D4,D5,D6,D7);
  * LCD D5 pin to digital pin 4
  * LCD D6 pin to digital pin 3
  * LCD D7 pin to digital pin 2
- */
+ */ 
 const int DS1307 = 0x68; // Address of DS1307 see data sheets
 const char* namahari[] =
 {"Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"};
@@ -90,8 +90,10 @@ byte sfinish;
   unsigned long convertpembandingdetikmati;
 int buttonstate=0;
 unsigned long start;
-
- 
+//ldr om
+int ldr;
+int varhitung;
+//ldr om
 void setup() {
   // put your setup code here, to run once:
   Wire.begin();
@@ -170,7 +172,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   dhtlcd();
   bacartc();
-    jamlcd();
+  jamlcd();
   tombol();
   cekmode();
   waterpump();
@@ -178,6 +180,7 @@ void loop() {
   indicatorpompa();
   growl();
   indicatorled();
+  tombolcahaya();
 }
 
 void variabelpompa(){
@@ -219,7 +222,7 @@ currentMillis = millis();
   previousMillis = currentMillis;
   lcd.setCursor(0,0);
   lcd.print(t);
-  start = start+1;
+  start = start+1; //start adalah variabel untuk stopwatch, karena masuk loop, jadi tiap 1 detik nambah 1 jika fungsi stopwatch dihidupkan
 }
 }
 
@@ -253,14 +256,27 @@ void bacartc(){
 
 void jamlcd(){
   bacartc();
-  lcd.setCursor(13,0);
-  lcd.print("jam");
+  lcd.setCursor(11,0);
+  lcd.print(varhitung);
+  //lcd.setCursor(13,0);
+  //lcd.print(ldr);
   lcd.setCursor(11,1);
   digit(jam);
   lcd.setCursor(13,1);
   lcd.print(":");
   lcd.setCursor(14,1);
   digit(menit);
+}
+void tombolcahaya(){
+  ldr=analogRead(A7); // A7 = pin data ldr
+  unsigned long currentMillis;
+  currentMillis = millis();
+if (ldr>450){
+    if (currentMillis-previousMillis >= 100){
+    previousMillis = currentMillis;
+    varhitung=varhitung+1;
+}
+}
 }
 
 void tombol(){
@@ -270,14 +286,17 @@ void tombol(){
     stopwatch();
   } else 
   if (buttonstate == LOW){
-    start=0;
+    //start=0;
     /*
     lcd.setCursor(0,0);
     lcd.print("hidupkan!");
     */
+    if (varhitung%2==0){ //jika genap maka
+    start=0;
+    varhitung=0;
     lcd.setCursor(0,1);
-    lcd.print("Hidupkan");
-
+    lcd.print("Hidupkan");}
+    else if (varhitung%2==1) stopwatch(); //jika ganjil maka
   }
 }
 
