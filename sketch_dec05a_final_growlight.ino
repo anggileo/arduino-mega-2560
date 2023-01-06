@@ -222,6 +222,8 @@ currentMillis = millis();
   previousMillis = currentMillis;
   lcd.setCursor(0,0);
   lcd.print(t);
+  lcd.setCursor(13,0);
+  lcd.print(ldr);
   start = start+1; //start adalah variabel untuk stopwatch, karena masuk loop, jadi tiap 1 detik nambah 1 jika fungsi stopwatch dihidupkan
 }
 }
@@ -267,17 +269,41 @@ void jamlcd(){
   lcd.setCursor(14,1);
   digit(menit);
 }
-void tombolcahaya(){
+void tombolcahaya(){ /*
   ldr=analogRead(A7); // A7 = pin data ldr
   unsigned long currentMillis;
   currentMillis = millis();
-if (ldr>450){
-    if (currentMillis-previousMillis >= 100){
-    previousMillis = currentMillis;
+  if (lampu==true){
+    if (ldr>530){ //530 adalah nilai analog saat lampu growlight dinyalakan
+      if (currentMillis-previousMillis >= 100){
+        previousMillis = currentMillis;
+        varhitung=varhitung+1;
+
+}
+}
+    else if (lampu==false){
+    //lampu dimatikan
+      if (ldr>630){
+        if(currentMillis-previousMillis >=100){
+          previousMillis = currentMillis;
+          varhitung=varhitung+1;
+          }
+        }
+   }
+} */
+ ldr=analogRead(A7); // A7 = pin data ldr
+ if (lampu==true){
+    if(ldr>530){
     varhitung=varhitung+1;
-}
-}
-}
+    }
+ } 
+ else if(lampu==false){
+  if(ldr>630){
+    varhitung=varhitung+1;
+    }
+    }
+
+} //void
 
 void tombol(){
 
@@ -292,8 +318,8 @@ void tombol(){
     lcd.print("hidupkan!");
     */
     if (varhitung%2==0){ //jika genap maka
-    start=0;
-    varhitung=0;
+    start=0; //stopwatch mati
+    varhitung=0; //varhitung dinolkan
     lcd.setCursor(0,1);
     lcd.print("Hidupkan");}
     else if (varhitung%2==1) stopwatch(); //jika ganjil maka
@@ -334,7 +360,7 @@ void otomts(){
   convertpembandingmenitmati = ((hfinish*60)+mfinish);
   convertpembandingdetikmati = ((convertpembandingmenitmati*60)+sfinish);
 
-  if((totaldetik>=convertpembandingdetiknyala) && (totaldetik<=convertpembandingdetikmati)){
+  if((totaldetik>=convertpembandingdetiknyala) && (totaldetik<=convertpembandingdetikmati)){ //jika total detik rtc sekarang masih dalam range convertpembanding detiknyala dan convertpembandingdetikmati 
     lampu=true;
   } else
   lampu=false;
